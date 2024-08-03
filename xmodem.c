@@ -282,7 +282,7 @@ int main(void)
 	   0x30000 is the download address,
 	   65536 is the maximum size to be written at this address
 	 */
-	st = xmodemReceive((char *)0x30000, 65536);
+	st = xmodemReceive((unsigned char *)0x30000, 65536);
 	if (st < 0) {
 		printf ("Xmodem receive error: status: %d\n", st);
 	}
