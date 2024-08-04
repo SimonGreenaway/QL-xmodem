@@ -1,16 +1,14 @@
-TARGET=linux
+TARGET=qdos
 
 COPT=-O3 -fomit-frame-pointer -Wall
 
 ifeq ($(TARGET),qdos)
 CC=qgcc qdos-gcc
-OS=qdos.c
 else
 CC=gcc
-OS=linux.c
 endif
 
-xmodem:	xmodem.o crc16.o os.o makefile
+xmodem:	xmodem.o crc16.o os.o makefile os.h
 	$(CC) -o xmodem xmodem.o crc16.o os.o
 	mv xmodem xmodem-$(TARGET)
 
@@ -20,8 +18,8 @@ xmodem.o:	xmodem.c crc16.h makefile
 crc16.o:	crc16.c crc16.h makefile
 	$(CC) $(COPT) -c crc16.c
 
-os.o:	$(OS) linux.h makefile
-	$(CC) $(COPT) -o os.o -c $(OS)
+os.o:	os.c os.h makefile
+	$(CC) $(COPT) -c os.c -D$(TARGET)
 
 clean:
 	rm -f xmodem.o os.o crc16.o

@@ -31,6 +31,7 @@
 #define TEST_XMODEM_RECEIVE
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /* this code needs standard functions memcpy() and memset()
@@ -43,7 +44,7 @@
  */
 
 #include "crc16.h"
-#include "linux.h"
+#include "os.h"
 
 #define SOH  0x01
 #define STX  0x02
@@ -271,46 +272,67 @@ int xmodemTransmit(unsigned char *src, int srcsz)
 	}
 }
 
+#define BUFFERSIZE 65536
 
-#ifdef TEST_XMODEM_RECEIVE
 int main(void)
 {
 	int st;
+	unsigned char *buffer=(unsigned char *)malloc(BUFFERSIZE);
+
+	#ifdef LINUX
+	openSerial("/dev/ttyUSB0",9600);
+	#else // QDOS
+	openSerial("ser1",9600);
+	#endif
+
+	
+
+	#ifdef TEST_XMODEM_RECEIVE
 
 	printf ("Send data using the xmodem protocol from your terminal emulator now...\n");
-	/* the following should be changed for your environment:
-	   0x30000 is the download address,
-	   65536 is the maximum size to be written at this address
-	 */
-	st = xmodemReceive((unsigned char *)0x30000, 65536);
-	if (st < 0) {
+
+	st = xmodemReceive(buffer,BUFFERSIZE);
+
+	if (st < 0)
+	{
 		printf ("Xmodem receive error: status: %d\n", st);
 	}
-	else  {
+	else
+	{
 		printf ("Xmodem successfully received %d bytes\n", st);
 	}
 
+	closeSerial();
+	free(buffer);
+
 	return 0;
-}
-#endif
-#ifdef TEST_XMODEM_SEND
-int main(void)
-{
-	int st;
+
+	#endif
+
+	#ifdef TEST_XMODEM_SEND
 
 	printf ("Prepare your terminal emulator to receive data now...\n");
+
 	/* the following should be changed for your environment:
 	   0x30000 is the download address,
 	   12000 is the maximum size to be send from this address
 	 */
-	st = xmodemTransmit((char *)0x30000, 12000);
-	if (st < 0) {
+
+	st = xmodemTransmit(buffer,BUFFERSIZE);
+
+	if (st < 0)
+	{
 		printf ("Xmodem transmit error: status: %d\n", st);
 	}
-	else  {
+	else
+	{
 		printf ("Xmodem successfully transmitted %d bytes\n", st);
 	}
 
+	closeSerial();
+	free(buffer);
+
 	return 0;
+
+	#endif
 }
-#endif

@@ -1,0 +1,11 @@
+Compression
+Dual ports
+Bootstrap a floppy image
+Synchronise a floppy image
+
+
+Code:
+
+   printer = fopen("SER1","w");
+   msp = fopen("ser1hc","w");
+

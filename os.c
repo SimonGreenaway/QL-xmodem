@@ -1,10 +1,21 @@
+#include <stdio.h>
 #include <errno.h>
 #include <fcntl.h> 
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
 
-#include "linux.h"
+#ifdef QDOS
+
+#include <qdos.h>
+
+#endif
+
+#include "os.h"
+
+int sfd;
+
+#ifdef LINUX
 
 int set_interface_attribs (int fd, int speed, int parity)
 {
@@ -51,7 +62,7 @@ int set_blocking (int fd, int should_block)
 	return 1;
 }
 
-int sfd;
+#endif
 
 int openSerial(char *portname,int baud)
 {
@@ -59,8 +70,12 @@ int openSerial(char *portname,int baud)
 
 	if (sfd < 0) return 0;
 
-	set_interface_attribs (sfd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+	#ifdef LINUX
+	set_interface_attribs (sfd, baud, 0);  // set speed to 115,200 bps, 8n1 (no parity)
 	set_blocking (sfd, 0);                // set no blocking
+	#else
+	mt_baud(baud);
+	#endif
 
 	//write (fd, "hello!\n", 7);           // send 7 character greeting
 
@@ -69,7 +84,7 @@ int openSerial(char *portname,int baud)
 	//char buf [100];
 	//int n = read (fd, buf, sizeof buf);  // read up to 100 characters if ready to read
 	//
-	
+
 	return 1;
 }
 
