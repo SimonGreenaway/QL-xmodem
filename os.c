@@ -15,7 +15,7 @@
 
 int sfd;
 
-#ifdef LINUX
+#ifdef linux
 
 int set_interface_attribs (int fd, int speed, int parity)
 {
@@ -70,7 +70,7 @@ int openSerial(char *portname,int baud)
 
 	if (sfd < 0) return 0;
 
-	#ifdef LINUX
+	#ifdef linux
 	set_interface_attribs (sfd, baud, 0);  // set speed to 115,200 bps, 8n1 (no parity)
 	set_blocking (sfd, 0);                // set no blocking
 	#else

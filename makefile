@@ -1,4 +1,7 @@
-TARGET=qdos
+# Compile with 'make TARGET=qdos' to make qdos version
+
+TARGET=linux
+ARCH := $(shell arch)
 
 COPT=-O3 -fomit-frame-pointer -Wall
 
@@ -10,9 +13,9 @@ endif
 
 xmodem:	xmodem.o crc16.o os.o makefile os.h
 	$(CC) -o xmodem xmodem.o crc16.o os.o
-	mv xmodem xmodem-$(TARGET)
+	mv xmodem xmodem-$(TARGET)-$(ARCH)
 
-xmodem.o:	xmodem.c crc16.h makefile
+xmodem.o:	xmodem.h xmodem.c crc16.h makefile
 	$(CC) $(COPT) -c xmodem.c
 
 crc16.o:	crc16.c crc16.h makefile
