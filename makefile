@@ -7,13 +7,23 @@ COPT=-O3 -fomit-frame-pointer -Wall
 
 ifeq ($(TARGET),qdos)
 CC=qgcc qdos-gcc
+ARCH=qdos
+else ifeq ($(ARCH),aarch64)
+CC=gcc
+COPT=-O3 -fomit-frame-pointer -Wall -mtune=cortex-a72
+LOPT=-Wl,-gc-sections
 else
 CC=gcc
+LOPT=
 endif
 
 xmodem:	xmodem.o crc16.o os.o makefile os.h
-	$(CC) -o xmodem xmodem.o crc16.o os.o
-	mv xmodem xmodem-$(TARGET)-$(ARCH)
+	$(CC) $(LOPT) -o xmodem xmodem.o crc16.o os.o
+	mv xmodem xmodem-$(ARCH)
+
+lz:	lz.o
+	$(CC) $(LOPT) -lm -o lz lz.o
+	mv lz lz-$(ARCH)
 
 xmodem.o:	xmodem.h xmodem.c crc16.h makefile
 	$(CC) $(COPT) -c xmodem.c
@@ -24,8 +34,14 @@ crc16.o:	crc16.c crc16.h makefile
 os.o:	os.c os.h makefile
 	$(CC) $(COPT) -c os.c -D$(TARGET)
 
+lz.o:	lz.c makefile
+	$(CC) $(COPT) -c lz.c -D$(TARGET)
+
 clean:
-	rm -f xmodem.o os.o crc16.o
+	rm -f xmodem.o os.o crc16.o lz.o
+
+cleaner:	clean
+	rm -f xmodem-* lz-*
 
 git:	clean
 	git add .
