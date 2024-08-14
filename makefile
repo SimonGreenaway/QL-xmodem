@@ -31,3 +31,17 @@ git:	clean
 	git add .
 	git commit
 	git push
+
+dist:	xmodem
+	cp xmodem-qdos /home/simon/emulators/ql/emulators/sQLux/flp1/xmodem
+	cp ../QL-sprites/env.bin /home/simon/emulators/ql/emulators/sQLux/flp1/env_bin
+	cp LICENSE /home/simon/emulators/ql/emulators/sQLux/flp1/LICENSE
+	cd /home/simon/emulators/ql/emulators/sQLux && ./sqlux --SPEED=0 -b "LRESPR flp1_sigext_rext:EW flp1_zip,#1;'flp1_xmodem_zip xmodem LICENSE'"
+	mv /home/simon/emulators/ql/emulators/sQLux/flp1/xmodem_zip xmodem.zip
+	cp xmodem-qdos xmodem
+	qltools xmodem.img -fdd xmodem -W
+	cp ../QL-sprites/env.bin env_bin
+	qltools xmodem.img -W env_bin xmodem LICENSE
+	cp xmodem.zip i.zip
+	mdvtool create name xmodem zip_import i.zip write xmodem.mdv 
+	rm -f i.zip env_bin xmodem
